@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TankController : MonoBehaviour
 {
+    public Transform TurretPivot => turretPivot;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float rotationSpeed = 100f;
@@ -14,8 +16,8 @@ public class TankController : MonoBehaviour
 
     [Header("Turret")]
     [SerializeField] private Transform turretPivot;
-    [SerializeField] private LayerMask groundMask;
-    [SerializeField] private float turretRotationSpeed = 12f;
+    [SerializeField] private float turretKeyboardRotationSpeed = 75f;
+    [SerializeField, Min(0f)] private float turretMouseSensitivity = 0.15f;
 
     private Rigidbody tankRigidbody;
 
@@ -23,24 +25,35 @@ public class TankController : MonoBehaviour
     private float targetTurnInput;
     private float currentMoveInput;
     private float currentTurnInput;
+    private Vector3 previousMousePosition;
 
     private void Awake()
     {
         tankRigidbody = GetComponent<Rigidbody>();
+        tankRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+    }
+
+    private void OnEnable()
+    {
+        previousMousePosition = Input.mousePosition;
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+            previousMousePosition = Input.mousePosition;
     }
 
     private void Update()
     {
-        targetMoveInput = Input.GetAxisRaw("Vertical");
-        targetTurnInput = Input.GetAxisRaw("Horizontal");
-
-        AimTurret();
+        ReadMovementInput();
+        RotateTurret();
     }
 
     private void FixedUpdate()
     {
         SmoothInput();
-        MoveTank();
+        MoveAndRotate();
     }
 
     private void SmoothInput()
@@ -61,7 +74,7 @@ public class TankController : MonoBehaviour
         );
     }
 
-    private void MoveTank()
+    private void MoveAndRotate()
     {
         float turn =
             currentTurnInput *
@@ -88,23 +101,33 @@ public class TankController : MonoBehaviour
         tankRigidbody.MovePosition(nextPosition);
     }
 
-    private void AimTurret()
+    private void ReadMovementInput()
     {
-        if (turretPivot == null || Camera.main == null)
+        targetMoveInput = GetButtonAxis(KeyCode.DownArrow, KeyCode.UpArrow);
+        targetTurnInput = GetButtonAxis(KeyCode.LeftArrow, KeyCode.RightArrow);
+    }
+
+    private static float GetButtonAxis(KeyCode negativeKey, KeyCode positiveKey)
+    {
+        float negative = Input.GetKey(negativeKey) ? 1f : 0f;
+        float positive = Input.GetKey(positiveKey) ? 1f : 0f;
+        return positive - negative;
+    }
+
+    private void RotateTurret()
+    {
+        if (turretPivot == null)
             return;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 200f, groundMask))
-        {
-            Vector3 direction = hit.point - turretPivot.position;
-            direction.y = 0f;
-            if (direction.sqrMagnitude < 0.01f)
-                return;
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            turretPivot.rotation = Quaternion.Slerp(
-                turretPivot.rotation,
-                targetRotation,
-                turretRotationSpeed * Time.deltaTime
-            );
-        }
+
+        float keyboardInput = GetButtonAxis(KeyCode.Z, KeyCode.X);
+        Vector3 mousePosition = Input.mousePosition;
+        float mouseDelta = mousePosition.x - previousMousePosition.x;
+        previousMousePosition = mousePosition;
+
+        float rotationAmount =
+            keyboardInput * turretKeyboardRotationSpeed * Time.deltaTime +
+            mouseDelta * turretMouseSensitivity;
+
+        turretPivot.Rotate(0f, rotationAmount, 0f, Space.Self);
     }
 }
