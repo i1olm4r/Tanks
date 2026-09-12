@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2286498224532231056}
   - component: {fileID: 8207950135756738710}
   - component: {fileID: 7685586285919890519}
-  - component: {fileID: 8970417920949804651}
   m_Layer: 0
   m_Name: Target
   m_TagString: Untagged
@@ -113,16 +112,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8970417920949804651
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4590330499276093450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edf2d9c699129b245877449538dd4283, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageableTarget
-  maxHealth: 100

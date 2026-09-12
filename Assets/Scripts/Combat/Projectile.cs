@@ -3,13 +3,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
+    [SerializeField] private ImpactEffect impactEffectPrefab;
+
     private Rigidbody projectileRigidbody;
     private int damage;
     private float lifetime;
     private Collider ownerCollider;
     private bool isInitialized;
-
-    [SerializeField] private ImpactEffect impactEffectPrefab;
+    private bool hasHit;
 
     private void Awake()
     {
@@ -45,29 +46,38 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isInitialized)
+        if (!isInitialized || hasHit)
             return;
 
         if (collision.collider == ownerCollider)
             return;
 
-        if (impactEffectPrefab != null)
-        {
-            ContactPoint contact = collision.GetContact(0);
+        hasHit = true;
 
-            Instantiate(
-                impactEffectPrefab,
-                contact.point,
-                Quaternion.LookRotation(contact.normal)
-            );
-        }
+        IDamageable damageable =
+            collision.collider.GetComponentInParent<IDamageable>();
 
-        if (collision.collider.TryGetComponent(
-            out DamageableTarget target))
-        {
-            target.TakeDamage(damage);
-        }
+        if (damageable != null)
+            damageable.TakeDamage(damage);
 
+        CreateImpactEffect(collision);
         Destroy(gameObject);
+    }
+
+    private void CreateImpactEffect(Collision collision)
+    {
+        if (impactEffectPrefab == null ||
+            collision.contactCount == 0)
+        {
+            return;
+        }
+
+        ContactPoint contact = collision.GetContact(0);
+
+        Instantiate(
+            impactEffectPrefab,
+            contact.point,
+            Quaternion.LookRotation(contact.normal)
+        );
     }
 }

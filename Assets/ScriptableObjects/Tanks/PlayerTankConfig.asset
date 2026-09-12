@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7ca0c0e09b1bb4c9e6c9f69ca91428, type: 3}
   m_Name: PlayerTankConfig
   m_EditorClassIdentifier: Assembly-CSharp::TankConfig
-  damage: 25
+  damage: 20
   projectileSpeed: 24
   fireCooldown: 0.7
   projectileLifetime: 60

@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 3218591677493806763}
   - component: {fileID: 1734456577408480322}
   - component: {fileID: 7043520052863951696}
+  - component: {fileID: 5962228394302047106}
+  - component: {fileID: 4872720414105278842}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Untagged
@@ -124,6 +126,7 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 8af0f5a53df4d224fb8480853ceab6b2, type: 2}
   firePoint: {fileID: 1104982913821191269}
   ownerCollider: {fileID: 1072699928288278684}
+  usePlayerInput: 1
   muzzleFlash: {fileID: 1472835112442597261}
   audioSource: {fileID: 7424419832135387087}
   shootClip: {fileID: 0}
@@ -146,6 +149,34 @@ MonoBehaviour:
   idlePitch: 0.8
   movingPitch: 1.25
   changeSpeed: 4
+--- !u!114 &5962228394302047106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158578302459192644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6541d69d7f9f64946bfe6bf166727fef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankHealth
+  maxHealth: 100
+  currentHealth: 100
+--- !u!114 &4872720414105278842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158578302459192644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4080dd97f1844c428e44d040104708f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankDeath
+  explosionPrefab: {fileID: 4641136700571470666, guid: bfb8b8d89e5d8b9449962930da62b241, type: 3}
+  destroyDelay: 0.1
 --- !u!1 &1238238528394595633
 GameObject:
   m_ObjectHideFlags: 0
