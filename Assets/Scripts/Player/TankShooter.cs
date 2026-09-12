@@ -6,6 +6,8 @@ public class TankShooter : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private Collider ownerCollider;
 
+    [SerializeField] private bool usePlayerInput = true;
+
     [Header("Feedback")]
     [SerializeField] private ParticleSystem muzzleFlash;
     [SerializeField] private AudioSource audioSource;
@@ -15,11 +17,11 @@ public class TankShooter : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (usePlayerInput && Input.GetMouseButtonDown(0))
             TryShoot();
     }
 
-    private void TryShoot()
+    public void TryShoot()
     {
         if (config == null ||
             config.projectilePrefab == null ||
