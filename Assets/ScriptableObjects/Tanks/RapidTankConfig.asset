@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: RapidTankConfig
   m_EditorClassIdentifier: Assembly-CSharp::TankConfig
   damage: 10
-  projectileSpeed: 24
+  projectileSpeed: 36
   fireCooldown: 0.25
-  projectileLifetime: 4
+  projectileLifetime: 120
+  projectilePrefab: {fileID: 0}

@@ -6,6 +6,11 @@ public class TankShooter : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private Collider ownerCollider;
 
+    [Header("Feedback")]
+    [SerializeField] private ParticleSystem muzzleFlash;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootClip;
+
     private float nextFireTime;
 
     private void Update()
@@ -41,6 +46,12 @@ public class TankShooter : MonoBehaviour
             config.projectileLifetime,
             ownerCollider
         );
+
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
+
+        if (audioSource != null && shootClip != null)
+            audioSource.PlayOneShot(shootClip);
 
         nextFireTime = Time.time + config.fireCooldown;
     }

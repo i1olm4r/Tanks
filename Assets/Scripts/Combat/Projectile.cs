@@ -9,6 +9,8 @@ public class Projectile : MonoBehaviour
     private Collider ownerCollider;
     private bool isInitialized;
 
+    [SerializeField] private ImpactEffect impactEffectPrefab;
+
     private void Awake()
     {
         projectileRigidbody = GetComponent<Rigidbody>();
@@ -48,6 +50,17 @@ public class Projectile : MonoBehaviour
 
         if (collision.collider == ownerCollider)
             return;
+
+        if (impactEffectPrefab != null)
+        {
+            ContactPoint contact = collision.GetContact(0);
+
+            Instantiate(
+                impactEffectPrefab,
+                contact.point,
+                Quaternion.LookRotation(contact.normal)
+            );
+        }
 
         if (collision.collider.TryGetComponent(
             out DamageableTarget target))
