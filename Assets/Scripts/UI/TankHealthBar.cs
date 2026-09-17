@@ -30,6 +30,16 @@ public class TankHealthBar : MonoBehaviour
             slider.minValue = 0f;
             slider.maxValue = maxHealth;
             slider.value = currentHealth;
+
+            float ratio = (float)currentHealth / maxHealth;
+            Image fill = slider.fillRect.GetComponent<Image>();
+
+            if (fill != null)
+            {
+                if (ratio > 0.6f) fill.color = Color.green;
+                else if (ratio > 0.3f) fill.color = Color.yellow;
+                else fill.color = Color.red;
+            }
         }
 
         if (healthText != null)

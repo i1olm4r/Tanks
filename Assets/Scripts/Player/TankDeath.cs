@@ -5,12 +5,15 @@ public class TankDeath : MonoBehaviour
 {
     [SerializeField] private GameObject explosionPrefab;
     [SerializeField, Min(0f)] private float destroyDelay = 0.1f;
+    [SerializeField] private bool isPlayer = false;
 
     private TankHealth health;
+    private KillCounter killCounter;
 
     private void Awake()
     {
         health = GetComponent<TankHealth>();
+        killCounter = FindFirstObjectByType<KillCounter>();
     }
 
     private void OnEnable()
@@ -35,6 +38,16 @@ public class TankDeath : MonoBehaviour
         }
 
         DisableTank();
+
+        if (killCounter != null && !isPlayer)
+            killCounter.RegisterKill();
+
+        if (isPlayer)
+        {
+            GameOverPanel gameOver = FindFirstObjectByType<GameOverPanel>();
+            if (gameOver != null) gameOver.Show();
+        }
+
         Destroy(gameObject, destroyDelay);
     }
 

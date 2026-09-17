@@ -79,25 +79,36 @@ public class EnemyTankAI : MonoBehaviour
 
     private void UpdateState(float distanceToPlayer)
     {
-        if (currentState == State.Patrol &&
-            distanceToPlayer <= detectionRange)
+        bool canSeePlayer = HasLineOfSight();
+
+        if (currentState == State.Patrol)
         {
-            ChangeState(State.Chase);
+            if (distanceToPlayer <= detectionRange)
+                ChangeState(State.Chase);
         }
 
         else if (currentState == State.Chase)
         {
-            if (distanceToPlayer <= attackRange)
+            if (distanceToPlayer <= attackRange && canSeePlayer)
+            {
                 ChangeState(State.Attack);
+            }
             else if (distanceToPlayer >= loseRange)
+            {
                 ChangeState(State.Patrol);
+            }
         }
+
         else if (currentState == State.Attack)
         {
-            if (distanceToPlayer > loseRange)
-                ChangeState(State.Patrol);
-            else if (distanceToPlayer > attackRange)
+            if (distanceToPlayer > attackRange || !canSeePlayer)
+            {
                 ChangeState(State.Chase);
+            }
+            else if (distanceToPlayer >= loseRange)
+            {
+                ChangeState(State.Patrol);
+            }
         }
     }
 
@@ -108,16 +119,19 @@ public class EnemyTankAI : MonoBehaviour
         if (currentState == State.Patrol)
         {
             agent.isStopped = false;
+            agent.stoppingDistance = 0f;
             SetPatrolDestination();
         }
         else if (currentState == State.Chase)
         {
             agent.isStopped = false;
+            agent.stoppingDistance = 0f;
             nextPathUpdateTime = 0f;
         }
         else
         {
             agent.isStopped = true;
+            agent.stoppingDistance = 0f;
             agent.ResetPath();
         }
     }
@@ -154,6 +168,8 @@ public class EnemyTankAI : MonoBehaviour
             return;
 
         nextPathUpdateTime = Time.time + pathUpdateInterval;
+
+        agent.isStopped = false;
         agent.SetDestination(player.position);
     }
 
@@ -162,7 +178,7 @@ public class EnemyTankAI : MonoBehaviour
         agent.isStopped = true;
         AimAtPlayer();
 
-        if (IsAimedAtPlayer() && shooter != null)
+        if (IsAimedAtPlayer() && HasLineOfSight() && shooter != null)
             shooter.TryShoot();
     }
 
@@ -211,6 +227,29 @@ public class EnemyTankAI : MonoBehaviour
         );
 
         return angle <= shootAngle;
+    }
+
+    private bool HasLineOfSight()
+    {
+        if (turretPivot == null || player == null)
+            return false;
+
+        Vector3 origin = turretPivot.position;
+        Vector3 target = player.position + Vector3.up * aimHeight;
+        Vector3 direction = target - origin;
+
+        float distance = direction.magnitude;
+
+        if (Physics.Raycast(
+            origin,
+            direction.normalized,
+            out RaycastHit hit,
+            distance))
+        {
+            return hit.transform.root == player.root;
+        }
+
+        return true;
     }
 
     private void OnDrawGizmosSelected()
